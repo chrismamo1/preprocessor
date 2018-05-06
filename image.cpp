@@ -313,7 +313,7 @@ char* image::to_buffer() {
 void image::write(string name) {
   ofstream fOut(name);
   if (!fOut.is_open()) {
-    cerr << "ERROR: could not open file << " name << ".\n";
+    cerr << "ERROR: could not open file << " << name << ".\n";
   }
   char *buffer = this->to_buffer();
   fOut << "P6\n" << this->width << " " << this->height << "\n255\n";
