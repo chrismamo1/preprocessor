@@ -14,6 +14,9 @@
 
 using namespace std;
 
+image::image(int w, int h): width(w), height(h), data(w * h) {
+}
+
 image::image(unsigned char *buf, int w, int h): width(w), height(h), data(w * h) {
   for (int i = 0; i < w * h; i++) {
     color<RgbDoubles_t> x;
@@ -217,7 +220,7 @@ void image::runKernel(double kernel[], size_t k, bool normalize) {
 void image::runKernel(double kernel[], size_t k) {
   //int lines = 1 + ((width * height) / (100 * k * k)); // there isn't much to this, just make it a reasonable value
   int lines = 150;
-  cout.flush();
+  cerr.flush();
   this->mapPixels(
     [kernel, k](color<RgbDoubles_t> q, int l, int t, image *img) {
       color<RgbDoubles_t> acc(0.0);
@@ -309,6 +312,9 @@ char* image::to_buffer() {
 
 void image::write(string name) {
   ofstream fOut(name);
+  if (!fOut.is_open()) {
+    cerr << "ERROR: could not open file << " name << ".\n";
+  }
   char *buffer = this->to_buffer();
   fOut << "P6\n" << this->width << " " << this->height << "\n255\n";
   fOut.write(buffer, 3 * this->width * this->height);

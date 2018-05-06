@@ -123,9 +123,9 @@ public:
   template<typename T>
   color<RgbDoubles_t> operator*(T x) {
     color<RgbDoubles_t> rv(this);
-    rv.value.red *= x;
-    rv.value.green *= x;
-    rv.value.blue *= x;
+    rv.value.red = rv.value.red * x;
+    rv.value.green = rv.value.green * x;
+    rv.value.blue = rv.value.blue * x;
     return rv;
   }
 
@@ -213,7 +213,15 @@ public:
   }
 
   double normalize() {
-    return sqrt(pow(value.red, 2.0) + pow(value.green, 2.0) + pow(value.blue, 2.0));
+    return pow(pow(value.red, 2.0) + pow(value.green, 2.0) + pow(value.blue, 2.0), 0.5);
+  }
+
+  color<RgbDoubles_t> sqrt() {
+    color<RgbDoubles_t> rv(this);
+    rv.value.red = pow(value.red, 0.5);
+    rv.value.green = pow(value.green, 0.5);
+    rv.value.blue = pow(value.blue, 0.5);
+    return rv;
   }
 
   /*string to_string() {

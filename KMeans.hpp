@@ -71,22 +71,22 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
     }
     guesses.push_back(best);*/
     guess = guess + ((max - min) / k);
-    cout << "Pushing " << guess.get_brightness() << " as a guess\n";
+    cerr << "Pushing " << guess.get_brightness() << " as a guess\n";
     centroids.push_back(guess);
   }
 
   //map<int, vector<size_t>> clusters; // mapping of centroid vector indices and point vector indices
   map<size_t, int> mappings; // keys value indices to centroid indices
   map<int, T> distances; // cache distances
-  cout << " ";
+  cerr << " ";
   int icount = 0;
   while(true) {
     double mean_distance = 0.0;
     for (int i = 0; i < k; i++) {
       mean_distance += distances[i].normalize() / double(distances.size());
     }
-    cout << "\riteration " << icount++ << ", average distance: " << mean_distance;
-    cout.flush();
+    cerr << "\riteration " << icount++ << ", average distance: " << mean_distance;
+    cerr.flush();
     /// put each value in the centroid it matches most closely
     for (size_t i = 0; i < values.size(); i++) {
       T shortest_distance = DISTANCE(values, i, centroids, 0);
@@ -133,9 +133,9 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
   for (int i = 0; i < k; i++) {
     mean_distance += distances[i].normalize() / double(distances.size());
   }
-  cout << "\riteration " << icount++ << ", average distance: " << mean_distance;
-  cout.flush();
-  cout << endl;
+  cerr << "\riteration " << icount++ << ", average distance: " << mean_distance;
+  cerr.flush();
+  cerr << endl;
   return pair<vector<T>, map<size_t, int>>(centroids, mappings);
 }
 

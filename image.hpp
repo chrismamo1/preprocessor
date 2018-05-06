@@ -19,6 +19,7 @@ public:
   int width;
   int height;
 
+  image(int w, int h);
   image(unsigned char *buffer, int width, int height);
   vector<color<RgbDoubles_t>> data;
 
@@ -53,7 +54,7 @@ public:
       thread *thr = new thread([rowsPerThread, t, h, w, f, &tmpB, self]() {
         for (int i = 0; i < rowsPerThread && t + i < h; i++) {
           for (int l = 0; l < w; l++) {
-            //cout << "l: " << l << ", t: " << t << endl;
+            //cerr << "l: " << l << ", t: " << t << endl;
             color<RgbDoubles_t> in = *self->getPixel(l, t + i);
             color<RgbDoubles_t> p = f(in, l, t + i, self);
             tmpB[l + (t + i) * w] = p;

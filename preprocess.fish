@@ -3,9 +3,12 @@
 for i in $argv
   set tName (mktemp);
   convert $i $tName.ppm;
-  ./main -c 2 -d 2 -s 1.1 -k 3 -l 100 $tName.ppm out/$i.ppm;
-  convert out/$i.ppm out/$i.ppm.png;
+  #set generatedFiles (./main -x 'detect edges' -c 2 -d 2 -s 1.1 -k 3 -l 100 $tName.ppm out/$i.ppm);
+  set generatedFiles (./main -c 2 -d 2 -s 1.1 -k 3 -l 100 $tName.ppm out/$i.ppm);
+  for j in $generatedFiles
+    convert $j $j.png
+    rm $j
+  end
   rm $tName;
   rm $tName.ppm;
-  rm out/$i.ppm;
 end

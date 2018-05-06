@@ -50,10 +50,10 @@ namespace filter {
     int k = sqrt(x.size() + 1);
     for (int r = 0; r < k; r++) {
       for (int c = 0; c < k; c++) {
-        cout << x[r * k + c] << " ";
-        cout.flush();
+        cerr << x[r * k + c] << " ";
+        cerr.flush();
       }
-      cout << endl;
+      cerr << endl;
     }
   }
 
