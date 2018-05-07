@@ -7,10 +7,12 @@
 set -l mode 'polarize'
 set -l files
 set -l params
+set -l oDir 'out'
 while set -q argv[1]
   switch $argv[1]
     case '-h' '--help'
-      echo 'Usage: ' $argv[1] '[-h | --help]' '[(-m | --mode) (polarize | detect edges | detect features)]'
+      echo 'Usage: ' $argv[1] '[-h | --help]' '[(-m | --mode) (polarize | detect edges | detect features)]' \
+        '[(-o | --odir) default is \'out\']'
       echo 'Options for polarization:'
       echo '\t(-c | --clusters)\tnumber of clusters to use in KMeans'
       exit 0
@@ -19,6 +21,9 @@ while set -q argv[1]
       set -e argv[1 2]
     case '-m' '--mode'
       set params $params '-x' $argv[2]
+      set -e argv[1 2]
+    case '-o' '--odir'
+      set oDir $argv[2]
       set -e argv[1 2]
     case '*'
       set files $files $argv[1]
@@ -31,7 +36,7 @@ for i in $files
   convert $i $tName.ppm;
   #set generatedFiles (./main -x 'detect edges' -c 2 -k 3 $tName.ppm out/$i.ppm);
   #set generatedFiles (./main -c 2 -k 3 $tName.ppm out/(basename $i).ppm);
-  set generatedFiles (./main $params -k 3 $tName.ppm out/(basename $i).ppm)
+  set generatedFiles (./main $params -k 3 $tName.ppm $oDir/(basename $i).ppm)
   for j in $generatedFiles
     set_color purple
     echo "Handling preprocessor output file " $j
