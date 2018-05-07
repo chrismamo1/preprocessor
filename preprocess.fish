@@ -10,7 +10,7 @@ set -l params
 while set -q argv[1]
   switch $argv[1]
     case '-h' '--help'
-      echo 'Usage: ' $argv[1] '[-h | --help]' '[(-m | --mode) (polarize | detect edges)]'
+      echo 'Usage: ' $argv[1] '[-h | --help]' '[(-m | --mode) (polarize | detect edges | detect features)]'
       echo 'Options for polarization:'
       echo '\t(-c | --clusters)\tnumber of clusters to use in KMeans'
       exit 0

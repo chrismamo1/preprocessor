@@ -12,6 +12,7 @@
 #include "color.hpp"
 #include "ColorRgb.hpp"
 #include "edge.hpp"
+#include "features.hpp"
 #include "filter.hpp"
 #include "gradient.hpp"
 #include "image.hpp"
@@ -129,6 +130,8 @@ int main(int argc, char *argv[]) {
     EdgeSet es(g);
     es.toSvg(oName + ".svg");
     cerr << "Done.\n";
+  } else if (operation == "detect features") {
+    img = harris(img);
   }
   /*cerr << "Grayscaling image...\n";
   img.mapPixels([dist, diffPow](color<RgbDoubles_t> input, int l, int t, image *img) {

@@ -28,6 +28,7 @@ public:
 
   void forceUpdate();
 
+  vector<pair<int, int>> getCircle(int left, int top, int radius);
   vector<pair<color<RgbDoubles_t>, int>> getNeighbors(int left, int top, int distance);
   vector<color<RgbDoubles_t>> getImmediateNeighbors(int left, int top);
   color<RgbDoubles_t> getBrightestPixel();
@@ -89,6 +90,8 @@ public:
    * [0, 255], then do f(x) = if x >= 128 then 255 else 0
    */
   void polarize();
+
+  void harris();
 
   char* to_buffer();
   void write(string fName);

@@ -10,6 +10,7 @@
 
 #include "color.hpp"
 #include "ColorRgb.hpp"
+#include "filter.hpp"
 #include "image.hpp"
 
 using namespace std;
@@ -99,6 +100,22 @@ void image::forceUpdate() {
   }
   this->darkestPixel = x;
   return;
+}
+
+/** lifted from http://members.chello.at/~easyfilter/bresenham.html */
+vector<pair<int, int>> image::getCircle(int xm, int ym, int r) {
+  int x = -r, y = 0, err = 2-2*r; /* II. Quadrant */ 
+  vector<pair<int, int>> rv;
+  do {
+    rv.push_back(pair<int, int>(xm-x, ym+y)); /*   I. Quadrant */
+    rv.push_back(pair<int, int>(xm-y, ym-x)); /*  II. Quadrant */
+    rv.push_back(pair<int, int>(xm+x, ym-y)); /* III. Quadrant */
+    rv.push_back(pair<int, int>(xm+y, ym+x)); /*  IV. Quadrant */
+    r = err;
+    if (r <= y) err += ++y*2+1;           /* e_xy+e_y < 0 */
+    if (r > x || err > y) err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+  } while (x < 0);
+  return rv;
 }
 
 vector<pair<color<RgbDoubles_t>, int>> image::getNeighbors(int left, int top, int distance) {

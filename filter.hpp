@@ -31,6 +31,33 @@ namespace filter {
     return gaussian(k, T(0.8493));
   }
 
+  /// returns a pair of the (horizontal, vertical) differentials
+  template<typename T>
+  pair<vector<T>, vector<T>> prewitt(int k) {
+    vector<T> hRv, vRv;
+    hRv.reserve(k * k);
+    vRv.reserve(k * k);
+    for (int r = 0; r < k; r++) {
+      for (int c = 0; c < k; c++) {
+        if (c == k / 2) {
+          hRv.push_back(0);
+        } else if (c < k / 2) {
+          hRv.push_back(-1);
+        } else {
+          hRv.push_back(1);
+        }
+        if (r == k / 2) {
+          vRv.push_back(0);
+        } else if (r < k / 2) {
+          vRv.push_back(-1);
+        } else {
+          vRv.push_back(1);
+        }
+      }
+    }
+    return pair<vector<T>, vector<T>>(hRv, vRv);
+  }
+
   template<typename T>
   vector<T> normalize(vector<T> x) {
     vector<T> rv(x);
@@ -51,7 +78,7 @@ namespace filter {
 
   template<typename T>
   void print(vector<T> x) {
-    int k = sqrt(x.size() + 1);
+    int k = sqrt(x.size());
     for (int r = 0; r < k; r++) {
       for (int c = 0; c < k; c++) {
         cerr << x[r * k + c] << " ";
