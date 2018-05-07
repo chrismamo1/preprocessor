@@ -46,6 +46,10 @@ Gradient Gradient::operator/(Gradient g) {
   return Gradient(left, top, intensity / g.intensity, angle);
 }
 
+Gradient Gradient::operator*(Gradient g) {
+  return Gradient(left, top, intensity * g.intensity, angle);
+}
+
 Gradient Gradient::operator/(double g) {
   return Gradient(left, top, intensity / g, angle);
 }
@@ -185,12 +189,12 @@ GradientGrid makeGradientGrid(image img) {
   }
   rv.nonMaximumSuppression();
   // double-thresholding by k-means clustering
-  pair<vector<Gradient>, map<size_t, int>> clusters = cluster_kmeans(7, rv.repr);
+  pair<vector<Gradient>, vector<int>> clusters = cluster_kmeans(7, rv.repr);
   vector<Gradient> centroids = clusters.first;
   for (int i = 0; i < 7; i++) {
     cerr << "centroid[" << i << "] = " << centroids[i].intensity << endl;
   }
-  map<size_t, int> mappings = clusters.second;
+  vector<int> mappings = clusters.second;
   for (size_t i = 0; i < rv.repr.size(); i++) {
     if (mappings[i] == 0) {
       rv.repr[i].intensity = 0.0;

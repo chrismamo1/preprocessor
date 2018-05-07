@@ -3,6 +3,7 @@
 
 #include<iostream>
 #include<map>
+#include<thread>
 #include<utility>
 #include<vector>
 
@@ -11,7 +12,7 @@ using namespace std;
 #define DISTANCE(VALS, IVAL, CENS, ICEN) ((VALS[IVAL] - CENS[ICEN]).abs())
 
 template<typename T>
-static T distance(int centroid, vector<T> centroids, vector<T> values, map<size_t, int> mappings) {
+static T distance(int centroid, vector<T> centroids, vector<T> values, vector<int> mappings) {
   T acc = 0.0;
   size_t cnt = 0;
   for (size_t i = 0; i < values.size(); i++) {
@@ -26,7 +27,7 @@ static T distance(int centroid, vector<T> centroids, vector<T> values, map<size_
 
 // return the mapping of values to centroids as well as the centroid vector
 template<typename T>
-pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
+pair<vector<T>, vector<int>> cluster_kmeans(int k, vector<T> values) {
   vector<T> centroids;
   const T threshold = T(0.01 * k);
   vector<int> guesses;
@@ -42,41 +43,13 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
   }
   T guess(min);
   for (int i = 0; i < k; i++) {
-    /// get the k most disparate values from the input set
-    /*size_t best = 0;
-    if (i != 0) {
-      size_t j;
-      T dist = T(0.0);
-      for (j = 0; j < values.size(); j++) {
-        bool already = false;
-        for (size_t l = 0; l < guesses.size(); l++) {
-          if (j == guesses[l] || values[j] == values[guesses[l]]) {
-            already = true;
-            break;
-          }
-        }
-        if (already) {
-          continue;
-        }
-        T dist2 = T(0.0);
-        for (size_t c = 0; c < centroids.size(); c++) {
-          T diff = values[j] - centroids[c];
-          dist2 = dist2 + diff.abs();
-        }
-        if (dist2 > dist) {
-          dist = dist2;
-          best = j;
-        }
-      }
-    }
-    guesses.push_back(best);*/
-    guess = guess + ((max - min) / k);
-    cerr << "Pushing " << guess.get_brightness() << " as a guess\n";
+    guess = guess + ((max - min) / k) / 2;
     centroids.push_back(guess);
   }
 
   //map<int, vector<size_t>> clusters; // mapping of centroid vector indices and point vector indices
-  map<size_t, int> mappings; // keys value indices to centroid indices
+  vector<int> mappings; // keys value indices to centroid indices
+  mappings.assign(values.size(), 1);
   map<int, T> distances; // cache distances
   cerr << " ";
   int icount = 0;
@@ -88,17 +61,33 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
     cerr << "\riteration " << icount++ << ", average distance: " << mean_distance;
     cerr.flush();
     /// put each value in the centroid it matches most closely
-    for (size_t i = 0; i < values.size(); i++) {
-      T shortest_distance = DISTANCE(values, i, centroids, 0);
-      mappings[i] = 0;
-      for (int j = 1; j < k; j++) {
-        T dist = DISTANCE(values, i, centroids, j);
-        if (dist < shortest_distance) {
-          shortest_distance = dist;
-          mappings[i] = j;
-        }
-      }
+    #define NTHREADS 2
+    vector<thread*> threads;
+    for (int iThread = 0; iThread < NTHREADS; iThread++) {
+      size_t beginAt = iThread * (values.size() / NTHREADS);
+      size_t endAt = (iThread == NTHREADS - 1) ? values.size() - 1 : beginAt + (values.size() / NTHREADS);
+      thread *thr = new thread(
+        [centroids, &mappings, &values](size_t beginAt, size_t endAt) {
+          for (size_t i = beginAt; i < endAt; i++) {
+            T shortest_distance = DISTANCE(values, i, centroids, 0);
+            mappings[i] = 0;
+            for (size_t j = 1; j < centroids.size(); j++) {
+              T dist = DISTANCE(values, i, centroids, j);
+              if (dist < shortest_distance) {
+                shortest_distance = dist;
+                mappings[i] = (int)j;
+              }
+            }
+          }
+          return;
+        },
+        beginAt, endAt);
+      threads.push_back(thr);
+    };
+    for (auto it = threads.begin(); it != threads.end(); it++) {
+      (*it)->join();
     }
+    /// Check for convergence.
     bool has_converged = true;
     for (int i = 0; i < k; i++) {
       T dist = distance(i, centroids, values, mappings);
@@ -116,6 +105,7 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
     if (has_converged) {
       break;
     }
+    /// Reposition each centroid to better fit its points.
     vector<int> counts;
     vector<T> accs;
     counts.assign(k, 0);
@@ -136,7 +126,7 @@ pair<vector<T>, map<size_t, int>> cluster_kmeans(int k, vector<T> values) {
   cerr << "\riteration " << icount++ << ", average distance: " << mean_distance;
   cerr.flush();
   cerr << endl;
-  return pair<vector<T>, map<size_t, int>>(centroids, mappings);
+  return pair<vector<T>, vector<int>>(centroids, mappings);
 }
 
 #endif

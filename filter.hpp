@@ -9,10 +9,9 @@ using namespace std;
 
 namespace filter {
   template<typename T>
-  vector<T> gaussian(int k) {
+  vector<T> gaussian(int k, T sigma) {
     vector<T> rv;
     rv.reserve(k * k);
-    T sigma = T(0.8493);
     T factor = T(1.0) / (T(2.0) * T(3.14159265358979) * sigma * sigma);
     int k2 = (k - 1) / 2;
     for (int r = 0; r < k; r++) {
@@ -25,6 +24,11 @@ namespace filter {
       }
     }
     return rv;
+  }
+
+  template<typename T>
+  vector<T> gaussian(int k) {
+    return gaussian(k, T(0.8493));
   }
 
   template<typename T>

@@ -123,9 +123,9 @@ public:
   template<typename T>
   color<RgbDoubles_t> operator*(T x) {
     color<RgbDoubles_t> rv(this);
-    rv.value.red = rv.value.red * x;
-    rv.value.green = rv.value.green * x;
-    rv.value.blue = rv.value.blue * x;
+    rv.value.red = rv.value.red * x.get_channel(RED);
+    rv.value.green = rv.value.green * x.get_channel(GREEN);
+    rv.value.blue = rv.value.blue * x.get_channel(BLUE);
     return rv;
   }
 

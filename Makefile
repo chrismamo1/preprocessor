@@ -9,4 +9,4 @@ main: main.cpp KMeans.hpp edge.o gradient.o filter.o image.o point.o color.hpp C
 	$(CC) -c $(CFLAGS) $^
 
 clean:
-	rm *.o main
+	rm -f *.o main

@@ -45,26 +45,14 @@ int main(int argc, char *argv[]) {
   int c;
   int ck = 2;
   int dist;
-  int rowsPerThread = 30;
-  float scaleBack;
-  float diffPow;
   string operation = "polarize";
   dist = 20;
-  scaleBack = 1.5;
-  diffPow = 2.0;
   string fName(argv[argc - 2]);
   string oName(argv[argc - 1]);
-  while((c = getopt(argc, argv, "c:d:l:k:i:o:s:x:h")) != -1) {
+  while((c = getopt(argc, argv, "c:k:i:o:x:h")) != -1) {
     switch(c) {
     case 'c':
       ck = atoi(optarg);
-      break;
-    case 'd':
-      diffPow = atof(optarg);
-      break;
-    case 'l':
-      if(optarg)
-        rowsPerThread = atoi(optarg);
       break;
     case 'k':
       if(optarg) {
@@ -80,9 +68,6 @@ int main(int argc, char *argv[]) {
       break;
     case 'o':
       oName = string(optarg);
-      break;
-    case 's':
-      scaleBack = atof(optarg);
       break;
     case 'x':
       operation = string(optarg);
@@ -118,10 +103,10 @@ int main(int argc, char *argv[]) {
   image img(buffer, w, h);
   if (operation == "polarize") {
     cerr << "Doing k-means clustering...\n";
-    pair<vector<color<RgbDoubles_t>>, map<size_t, int>> clusters = cluster_kmeans(ck, img.data);
+    pair<vector<color<RgbDoubles_t>>, vector<int>> clusters = cluster_kmeans(ck, img.data);
     cerr << "Done.\n";
     vector<color<RgbDoubles_t>> centroids = clusters.first;
-    map<size_t, int> mappings = clusters.second;
+    vector<int> mappings = clusters.second;
     for (int i = 0; i < ck; i++) {
       int count = 0;
       for (size_t j = 0; j < mappings.size(); j++) {

@@ -27,6 +27,7 @@ public:
   Gradient operator+(Gradient g);
   Gradient operator-(Gradient g);
   Gradient operator/(Gradient g);
+  Gradient operator*(Gradient g);
   Gradient operator/(double g);
 
   bool operator==(Gradient g);
